@@ -27,7 +27,7 @@
                                  data-heidipay-spaceBetweenAmountAndSymbol="true"
                                  data-heidipay-decimalDigits="2"></div>
                         {% endif %}
-                        {% if promotionProductMode == 1 promotionProductMode == 2 %}
+                        {% if promotionProductMode == 1 or promotionProductMode == 2 %}
                             <div id="heidipay-container" class="heidipay-container heidipay-container-2"
                                  data-heidipay="true"
                                  data-heidipay-minorAmount="{{ heylight_add_fee(price.totalPrice * 100) }}"
