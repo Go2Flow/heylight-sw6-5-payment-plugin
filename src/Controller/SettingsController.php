@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Controller;
+namespace Go2FlowHeyLightPayment\Controller;
 
-use Go2FlowHeidiPayPayment\Service\HeidiPayApiService;
+use Go2FlowHeyLightPayment\Service\HeyLightApiService;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Shopware\Core\Framework\Context;
@@ -26,28 +26,28 @@ class SettingsController extends AbstractController
     protected LoggerInterface $logger;
 
     /**
-     * @var HeidiPayApiService|null
+     * @var HeyLightApiService|null
      */
-    protected ?HeidiPayApiService $heidiPayApiService;
+    protected ?HeyLightApiService $heyLightApiService;
 
     /**
      * @param ContainerInterface $container
-     * @param HeidiPayApiService $heidiPayApiService
+     * @param HeyLightApiService $heyLightApiService
      * @param LoggerInterface $logger
      */
     public function __construct(
         ContainerInterface $container,
-        HeidiPayApiService $heidiPayApiService,
+        HeyLightApiService $heyLightApiService,
         LoggerInterface    $logger
     )
     {
         $this->setContainer($container);
-        $this->heidiPayApiService = $heidiPayApiService;
+        $this->heyLightApiService = $heyLightApiService;
         $this->logger = $logger;
     }
 
     /**
-     * @Route("/api/_action/heidipay_settings_service/validate-api-credentials", name="api.action.heidipay_settings_service.validate.api.credentials", methods={"POST"})
+     * @Route("/api/_action/heylight_settings_service/validate-api-credentials", name="api.action.heylight_settings_service.validate.api.credentials", methods={"POST"})
      * @throws \Exception
      */
     public function validateApiCredentials(Request $request, Context $context): JsonResponse
@@ -58,7 +58,7 @@ class SettingsController extends AbstractController
 
         try {
 
-            $token = $this->heidiPayApiService->testAuthTransactionToken($merchant_key);
+            $token = $this->heyLightApiService->testAuthTransactionToken($merchant_key);
 
             if(!$token) {
                 $error = true;

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Subscriber;
+namespace Go2FlowHeyLightPayment\Subscriber;
 
-use Go2FlowHeidiPayPayment\Handler\PaymentHandler;
-use Go2FlowHeidiPayPayment\Installer\Modules\PaymentMethodInstaller;
-use Go2FlowHeidiPayPayment\Service\HeidiPayApiService;
+use Go2FlowHeyLightPayment\Handler\PaymentHandler;
+use Go2FlowHeyLightPayment\Installer\Modules\PaymentMethodInstaller;
+use Go2FlowHeyLightPayment\Service\HeyLightApiService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -20,15 +20,15 @@ class OrderDeliverySubscriber implements EventSubscriberInterface
 {
 
     private EntityRepository $orderDeliveryRepository;
-    private HeidiPayApiService $heidiPayApiService;
+    private HeyLightApiService $heyLightApiService;
 
     public function __construct(
         EntityRepository  $orderDeliveryRepository,
-        HeidiPayApiService $heidiPayApiService
+        HeyLightApiService $heyLightApiService
     )
     {
         $this->orderDeliveryRepository = $orderDeliveryRepository;
-        $this->heidiPayApiService = $heidiPayApiService;
+        $this->heyLightApiService = $heyLightApiService;
     }
 
     /**
@@ -56,7 +56,7 @@ class OrderDeliverySubscriber implements EventSubscriberInterface
         if ($order) {
             $externalId = $this->getExternalIdFromOrder($order);
             if ($externalId) {
-                $this->heidiPayApiService->confirmDelivery($externalId, $order->getSalesChannelId());
+                $this->heyLightApiService->confirmDelivery($externalId, $order->getSalesChannelId());
             }
         }
     }
@@ -69,8 +69,8 @@ class OrderDeliverySubscriber implements EventSubscriberInterface
             new EqualsAnyFilter(
                 'order.transactions.paymentMethod.technicalName',
                 [
-                    (PaymentHandler::PAYMENT_METHOD_PREFIX . PaymentMethodInstaller::HEIDIPAY_METHOD),
-                    (PaymentHandler::PAYMENT_METHOD_PREFIX . PaymentMethodInstaller::HEIDIPAY_CREDIT_METHOD)
+                    (PaymentHandler::PAYMENT_METHOD_PREFIX . PaymentMethodInstaller::HEYLIGHT_METHOD),
+                    (PaymentHandler::PAYMENT_METHOD_PREFIX . PaymentMethodInstaller::HEYLIGHT_CREDIT_METHOD)
                 ]
             )
         );

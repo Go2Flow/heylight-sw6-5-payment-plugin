@@ -17,20 +17,20 @@ Shopware.Component.override('sw-order-list', {
             let columns = this.$super('getOrderColumns');
             columns.push({
                 property: 'id',
-                label: 'sw-order.list.heidipay_reference',
+                label: 'sw-order.list.heylight_reference',
                 align: 'left'
             });
 
             return columns;
         },
 
-        getheidiPayReference(order){
+        getExternalPayReference(order){
             if (order.transactions.length) {
                 let found = order.transactions.find(transaction => {
                     return (transaction.customFields && transaction.customFields.external_contract_uuid)
                 });
                 if (found) {
-                    return 'HP_'+order.orderNumber;
+                    return 'HL_'+order.orderNumber;
                 }
             }
 

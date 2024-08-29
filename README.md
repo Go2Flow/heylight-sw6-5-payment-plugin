@@ -1,1 +1,1 @@
-# heylight-sw6-5-payment-plugin
+# heylight-sw6-payment-plugin

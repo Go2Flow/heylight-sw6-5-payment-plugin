@@ -1,8 +1,8 @@
 monolog:
-    channels: ['g2f_heidipay_payment_plugin']
+    channels: ['g2f_heylight_payment_plugin']
     handlers:
-        g2fHeidipayPaymentPluginHandler:
+        g2fHeyLightPaymentPluginHandler:
             type: rotating_file
-            path: "%kernel.logs_dir%/g2f_heidipay_payment_plugin_%kernel.environment%.log"
+            path: "%kernel.logs_dir%/g2f_heylight_payment_plugin_%kernel.environment%.log"
             level: error
-            channels: [ "g2f_heidipay_payment_plugin" ]
+            channels: [ "g2f_heylight_payment_plugin" ]

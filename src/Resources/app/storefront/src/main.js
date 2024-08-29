@@ -1,3 +1,3 @@
-import HeidipayOpenMiniBasket from './heidipay-plugin/open-mini-basket.plugin';
+import HeylightOpenMiniBasket from './heylight-plugin/open-mini-basket.plugin';
 const PluginManager = window.PluginManager;
-PluginManager.register('HeidipayOpenMiniBasket', HeidipayOpenMiniBasket);
+PluginManager.register('HeylightOpenMiniBasket', HeylightOpenMiniBasket);

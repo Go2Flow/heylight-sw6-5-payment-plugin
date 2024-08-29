@@ -1,0 +1,60 @@
+{
+    "HeyLight": {
+        "mainMenuItemGeneral": "HeyLight",
+        "module": {
+            "title": "HeyLight",
+            "description": "Buy now, pay later."
+        },
+        "settingsForm": {
+            "title": "HeyLight",
+            "test": "Teste den API-Zugang",
+            "save": "Speichern",
+            "attention": "Wichtig",
+            "attentionText": "Damit das Plugin funktioniert, müssen alle * Pflichtfelder ausgefüllt und die korrekten Adressdaten hinterlegt sein.",
+            "descriptionWebservice": "Den Secret Key bekommen Sie direkt von HeyLight zugewiesen und zugeschickt. Falls Sie diese noch nicht beantragt oder zugeschickt bekommen haben, können Sie diese unter nachfolgendem Link bestellen: ",
+            "fields": {
+                "secretKey": "Secret API Key",
+                "promotionPublicApiKey": "Public API Key",
+                "promotionWidgetFee": "Gebühr",
+                "promotionProductMode": "Werbebotschaft Produkt",
+                "promotionTerms": "Anzahl der Raten (BNPL)",
+                "promotionTermsCredit": "Anzahl der Raten (Credit)"
+            },
+            "messages": {
+                "required": "{field} darf nicht leer sein.",
+                "messageNotBlank": "Dieses Feld darf nicht leer sein.",
+                "titleSuccess": "Erfolg",
+                "titleError": "Fehler",
+                "titleMissing": "Pflichtfelder fehlen",
+                "messageMissing": "Bitte füllen Sie alle Pflichtfelder aus.",
+                "messageTestSuccess": "Die API-Zugangsdaten sind korrekt.",
+                "messageTestError": "Die API-Zugangsdaten sind falsch.",
+                "messageTestErrorGeneral": "Die API-Zugangsdaten konnten nicht verifiziert werden.",
+                "messageTestTitleEmpty": "Die API-Zugangsdaten sind leer.",
+                "messageTestErrorEmpty": "Die API-Zugangsdaten dürfen nicht leer sein.",
+                "messageSaveSuccess": "Die Plugin-Einstellungen wurden gespeichert.",
+                "messageSaveError": "Die Plugin-Einstellungen konnten nicht gespeichert werden."
+            }
+        },
+        "supportModal": {
+            "supportButton": "Support",
+            "title": "Wie können wir Ihnen helfen?",
+            "supportDesc": "Kontaktieren Sie unser Support-Team",
+            "manualButton": "Dokumentation",
+            "manualDesc": "Lesen Sie unsere Integrations Anleitung"
+        },
+        "order": {
+            "detail": {
+                "actions": "Aktionen",
+                "actions_refund": "Rückerstatten",
+                "tab": "HeyLight"
+            },
+            "messages": {
+                "refundSuccessTitle": "Rückerstattung erfolgreich!",
+                "refundSuccessMessage": "Die Rückerstattung wurde erfolgreich verarbeitet",
+                "refundErrorTitle": "Rückerstattung fehlgeschlagen!",
+                "refundErrorMessage": "Bitte versuchen Sie es erneut oder wenden Sie sich an den HeyLight-Support"
+            }
+        }
+    }
+}

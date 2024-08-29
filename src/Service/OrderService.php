@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Service;
+namespace Go2FlowHeyLightPayment\Service;
 
-use Go2FlowHeidiPayPayment\Handler\PaymentHandler;
-use Go2FlowHeidiPayPayment\Handler\TransactionHandler;
-use Go2FlowHeidiPayPayment\Helper\Transaction;
-use Go2FlowHeidiPayPayment\Installer\Modules\PaymentMethodInstaller;
+use Go2FlowHeyLightPayment\Handler\PaymentHandler;
+use Go2FlowHeyLightPayment\Handler\TransactionHandler;
+use Go2FlowHeyLightPayment\Helper\Transaction;
+use Go2FlowHeyLightPayment\Installer\Modules\PaymentMethodInstaller;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderCollection;
@@ -21,25 +21,25 @@ class OrderService
 {
 
     private EntityRepository $orderRepository;
-    private HeidiPayApiService $heidiPayApiService;
+    private HeyLightApiService $heyLightApiService;
     private TransactionHandler $transactionHandler;
     private EntityRepository $transactionRepository;
 
     /**
      * @param EntityRepository $orderRepository
      * @param EntityRepository $transactionRepository
-     * @param HeidiPayApiService $heidiPayApiService
+     * @param HeyLightApiService $heyLightApiService
      * @param TransactionHandler $transactionHandler
      */
     public function __construct(
-        EntityRepository $orderRepository,
-        EntityRepository $transactionRepository,
-        HeidiPayApiService $heidiPayApiService,
+        EntityRepository   $orderRepository,
+        EntityRepository   $transactionRepository,
+        HeyLightApiService $heyLightApiService,
         TransactionHandler $transactionHandler,
     )
     {
         $this->orderRepository = $orderRepository;
-        $this->heidiPayApiService = $heidiPayApiService;
+        $this->heyLightApiService = $heyLightApiService;
         $this->transactionHandler = $transactionHandler;
         $this->transactionRepository = $transactionRepository;
     }
@@ -80,8 +80,8 @@ class OrderService
             new EqualsAnyFilter(
                 'order.transactions.paymentMethod.technicalName',
                 [
-                    (PaymentHandler::PAYMENT_METHOD_PREFIX . PaymentMethodInstaller::HEIDIPAY_METHOD),
-                    (PaymentHandler::PAYMENT_METHOD_PREFIX . PaymentMethodInstaller::HEIDIPAY_CREDIT_METHOD)
+                    (PaymentHandler::PAYMENT_METHOD_PREFIX . PaymentMethodInstaller::HEYLIGHT_METHOD),
+                    (PaymentHandler::PAYMENT_METHOD_PREFIX . PaymentMethodInstaller::HEYLIGHT_CREDIT_METHOD)
                 ]
             )
         );
@@ -116,7 +116,7 @@ class OrderService
         }
         $newStatusResult = [];
         foreach ($channels as $channelId => $externalIds) {
-            foreach ($this->heidiPayApiService->getOrderStatus($externalIds, $channelId) as $statusItem) {
+            foreach ($this->heyLightApiService->getOrderStatus($externalIds, $channelId) as $statusItem) {
                 $newStatusResult[$statusItem['external_contract_uuid']] = $statusItem['status'];
             }
         }
@@ -149,7 +149,7 @@ class OrderService
         ]);
         /** @var OrderTransactionEntity $transaction */
         $transaction = $this->transactionRepository->search($criteria, $context)->first();
-        $success = $this->heidiPayApiService->refund(
+        $success = $this->heyLightApiService->refund(
             $transaction->getCustomFields()['external_contract_uuid'],
             $transaction->getAmount()->getTotalPrice(),
             $transaction->getOrder()->getCurrency()->getIsoCode(),

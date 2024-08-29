@@ -8,7 +8,7 @@ Component.override('sw-order-detail', {
 
     data() {
         return {
-            heidipayTransactions: []
+            heylightTransactions: []
         };
     },
 
@@ -16,7 +16,7 @@ Component.override('sw-order-detail', {
         orderId: {
             deep: true,
             handler() {
-                this.heidipayTransactions = [];
+                this.heylightTransactions = [];
 
                 if (!this.orderId) {
                     return;
@@ -43,11 +43,11 @@ Component.override('sw-order-detail', {
 
         loadTransactions(order) {
             order.transactions.forEach((orderTransaction) => {
-                if (orderTransaction.paymentMethod.technicalName !== 'heidipay_heidipay') {
+                if (orderTransaction.paymentMethod.technicalName !== 'heylight_heylight') {
                     return;
                 }
 
-                this.heidipayTransactions.push(orderTransaction);
+                this.heylightTransactions.push(orderTransaction);
             });
         }
     }

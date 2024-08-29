@@ -1,6 +1,6 @@
 <?php
 
-namespace Go2FlowHeidiPayPayment\Service;
+namespace Go2FlowHeyLightPayment\Service;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;

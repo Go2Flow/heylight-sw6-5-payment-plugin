@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Handler;
+namespace Go2FlowHeyLightPayment\Handler;
 
-use Go2FlowHeidiPayPayment\Helper\Transaction;
+use Go2FlowHeyLightPayment\Helper\Transaction;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -71,13 +71,13 @@ class TransactionHandler
 
     /**
      * @param OrderTransactionEntity $orderTransaction
-     * @param string $heidiPayTransactionStatus
+     * @param string $heyLightTransactionStatus
      * @param Context $context
      */
     public function handleTransactionStatus(
         OrderTransactionEntity $orderTransaction,
-        string $heidiPayTransactionStatus,
-        Context $context
+        string                 $heyLightTransactionStatus,
+        Context                $context
     ): void
     {
         $stateMachineState = $orderTransaction->getStateMachineState();
@@ -85,7 +85,7 @@ class TransactionHandler
             $stateMachineState = $this->getStateMachineState($orderTransaction->getStateId(), $context);
         }
         $stateName = $stateMachineState->getTechnicalName();
-        switch ($heidiPayTransactionStatus) {
+        switch ($heyLightTransactionStatus) {
             case Transaction::CONFIRMED:
                 if (OrderTransactionStates::STATE_PAID === $stateName) break;
                 $this->transactionStateHandler->paid($orderTransaction->getId(), $context);

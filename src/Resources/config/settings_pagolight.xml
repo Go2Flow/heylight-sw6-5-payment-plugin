@@ -2,13 +2,13 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
-        <title>HeidiPay</title>
-        <title lang="de-DE">HeidiPay</title>
-        <title lang="de-CH">HeidiPay</title>
-        <title lang="it-CH">HeidiPay</title>
+        <title>HeyLight</title>
+        <title lang="de-DE">HeyLight</title>
+        <title lang="de-CH">HeyLight</title>
+        <title lang="it-CH">HeyLight</title>
 
         <input-field type="text">
-            <name>heidiSecretKey</name>
+            <name>secretKey</name>
             <label>Sandbox or Live Secret API Key (Merchant Key)</label>
             <label lang="de-DE">Sandbox oder Live Secret API Key (Händlerschlüssel)</label>
             <label lang="de-CH">Sandbox oder Live Secret API Key (Händlerschlüssel)</label>
@@ -17,7 +17,7 @@
         </input-field>
 
         <input-field type="single-select">
-            <name>heidiMode</name>
+            <name>mode</name>
             <label>Mode</label>
             <label lang="de-DE">Modus</label>
             <label lang="de-CH">Modus</label>
@@ -54,7 +54,7 @@
         <title lang="it-CH">Impostazioni dei messaggi promozionali</title>
 
         <input-field type="single-select">
-            <name>heidiPromotionShowOnProduct</name>
+            <name>promotionShowOnProduct</name>
             <label>Show the promotional message on your product page</label>
             <label lang="de-DE">Zeigen Sie den Preis pro Monat auf Ihrer Produktseite an</label>
             <label lang="de-CH">Zeigen Sie den Preis pro Monat auf Ihrer Produktseite an</label>
@@ -87,7 +87,7 @@
         </input-field>
 
         <input-field type="single-select">
-            <name>heidiPromotionShowOnCart</name>
+            <name>promotionShowOnCart</name>
             <label>Show promotional message on the cart</label>
             <label lang="de-DE">Preis pro Monat im Warenkorb anzeigen</label>
             <label lang="de-CH">Preis pro Monat im Warenkorb anzeigen</label>
@@ -121,7 +121,7 @@
         </input-field>
 
         <input-field type="text">
-            <name>heidiPromotionPublicApiKey</name>
+            <name>promotionPublicApiKey</name>
             <label>Public API Key</label>
             <label lang="de-DE">Öffentlicher API-Schlüssel</label>
             <label lang="de-CH">Öffentlicher API-Schlüssel</label>
@@ -130,7 +130,7 @@
         </input-field>
 
         <input-field type="text">
-            <name>heidiPromotionWidgetFee</name>
+            <name>promotionWidgetFee</name>
             <label>Display price per month including a fee</label>
             <label lang="de-DE">Preis pro Monat inklusive einer Gebühr anzeigen</label>
             <label lang="de-CH">Preis pro Monat inklusive einer Gebühr anzeigen</label>
@@ -145,7 +145,7 @@
         </input-field>
 
         <input-field type="multi-select">
-            <name>heidiPromotionTerms</name>
+            <name>promotionTerms</name>
             <label>Select the number of instalments to offer customers</label>
             <label lang="de-DE">Wählen Sie die Anzahl der Raten aus, die Sie Ihren Kunden anbieten möchten</label>
             <label lang="de-CH">Wählen Sie die Anzahl der Raten aus, die Sie Ihren Kunden anbieten möchten</label>
@@ -228,7 +228,7 @@
         </input-field>
 
         <input-field type="text">
-            <name>heidiMaximumOrderValue</name>
+            <name>maximumOrderValue</name>
             <label>Maximum order value</label>
             <label lang="de-DE">Maximaler Bestellwert</label>
             <label lang="de-CH">Maximaler Bestellwert</label>
@@ -236,7 +236,7 @@
         </input-field>
 
         <input-field type="text">
-            <name>heidiPromotionWidgetMinAmount</name>
+            <name>promotionWidgetMinAmount</name>
             <label>Display promotional message only for products or orders above</label>
             <label lang="de-DE">Anzeigen des Preis pro Monat nur für Produkte oder Bestellungen über</label>
             <label lang="de-CH">Anzeigen des Preis pro Monat nur für Produkte oder Bestellungen über</label>
@@ -245,7 +245,7 @@
         </input-field>
 
         <input-field type="text">
-            <name>heidiPromotionWidgetMinInstalment</name>
+            <name>promotionWidgetMinInstalment</name>
             <label>Display promotional message only if the monthly instalment amount is greater than</label>
             <label lang="de-DE">Preis pro Monat nur anzeigen, wenn die monatliche Rate grösser ist als</label>
             <label lang="de-CH">Preis pro Monat nur anzeigen, wenn die monatliche Rate grösser ist als</label>

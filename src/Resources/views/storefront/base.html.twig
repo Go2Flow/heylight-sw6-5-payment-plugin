@@ -6,13 +6,13 @@
     <script>
         document.addEventListener("DOMContentLoaded", function(event) {
             if(document.querySelector('.heidipay-container') || document.querySelector('.heidipay-container-2')){
-                loadHeidiPay();
+                loadHeyLight();
             }
         });
 
-        function loadHeidiPay() {
+        function loadHeyLight() {
             let script = document.createElement('script');
-            {% if config('Go2FlowHeidiPayPayment.settings.heidiMode') == 1 %}
+            {% if config('Go2FlowHeyLightPayment.settings.mode') == 1 %}
             script.src = 'https://upstream.heidipay.com/sdk/heidi-upstream-lib.js';
             {% else %}
             script.src = 'https://sbx-upstream.heidipay.io/sdk/heidi-upstream-lib.js';
@@ -25,7 +25,7 @@
                 //         initCoreHeidiCode(jQuery);
                 //     }
                 // }
-                window.HeidiPayLoaded = true;
+                window.HeyLightLoaded = true;
             })
         }
     </script>

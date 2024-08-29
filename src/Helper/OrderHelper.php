@@ -1,8 +1,9 @@
 <?php
 
-namespace Go2FlowHeidiPayPayment\Helper;
+namespace Go2FlowHeyLightPayment\Helper;
 
-use Go2FlowHeidiPayPayment\Templating\TwigExtension;
+use Go2FlowHeyLightPayment\Service\WebhookService;
+use Go2FlowHeyLightPayment\Templating\TwigExtension;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -36,16 +37,16 @@ class OrderHelper {
 		$requestData = array(
 			'amount_format'       => 'DECIMAL',
 			'amount'              => [
-				'amount'   => self::getFormattedPrice( $templateFunctions->heidiAddFee( $order->getAmountTotal() ) ),
+				'amount'   => self::getFormattedPrice( $templateFunctions->addFee( $order->getAmountTotal() ) ),
 				'currency' => $order->getCurrency()->getIsoCode(),
             ],
 			'redirect_urls'       => [
-				'success_url'     => $url.'&status=heidipay_success',
-				'failure_url'     => $url.'&status=heidipay_fail',
+				'success_url'     => $url.'&status=heylight_success',
+				'failure_url'     => $url.'&status=heylight_fail',
             ],
             'webhooks'            => [
                 'mapping_scheme'  => 'SHOPWARE',
-                'status_url'      => self::getStorefrontUrl($salesChannelContext).'/heidipay/webhook/'.$order->getId().'/status',
+                'status_url'      => self::getStorefrontUrl($salesChannelContext).'/heylight/webhook/'.$order->getId().'/status',
                 'token'           => $webhookToken,
             ],
 			'origination_channel' => 'ecommerce',
@@ -84,9 +85,9 @@ class OrderHelper {
         $templateFunctions = new TwigExtension($configService);
 		$items = [];
 		foreach ( $order->getLineItems()->getElements() as $item ) {
-            $widget_min_instalment = $configService->get('Go2FlowHeidiPayPayment.settings.heidiPromotionWidgetMinInstalment', $salesChannelContext->getSalesChannelId());
+            $widget_min_instalment = $configService->get('Go2FlowHeyLightPayment.settings.promotionWidgetMinInstalment', $salesChannelContext->getSalesChannelId());
             $minimumInstalmentPrice = (! empty($widget_min_instalment) ? (float) $widget_min_instalment : 1);
-            $availableTerms = $templateFunctions->getAvailableTerms($terms, $templateFunctions->heidiAddFee( $order->getAmountTotal() ), $minimumInstalmentPrice);
+            $availableTerms = $templateFunctions->getAvailableTerms($terms, $templateFunctions->addFee( $order->getAmountTotal() ), $minimumInstalmentPrice);
 
 			$tmp = [
 				'sku'           => $item->getPayload()['productNumber'] ?? '',

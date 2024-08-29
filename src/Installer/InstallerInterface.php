@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Installer;
+namespace Go2FlowHeyLightPayment\Installer;
 
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;

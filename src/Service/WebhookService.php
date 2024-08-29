@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Service;
+namespace Go2FlowHeyLightPayment\Service;
 
-use Go2FlowHeidiPayPayment\Core\Content\WebhookTokens\WebhookTokenEntity;
+use Go2FlowHeyLightPayment\Core\Content\WebhookTokens\WebhookTokenEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;

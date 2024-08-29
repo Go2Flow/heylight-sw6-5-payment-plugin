@@ -1,8 +1,8 @@
 <?php
 
-namespace Go2FlowHeidiPayPayment\Helper;
+namespace Go2FlowHeyLightPayment\Helper;
 
-use Go2FlowHeidiPayPayment\Service\HeidiPayApiService;
+use Go2FlowHeyLightPayment\Service\HeyLightApiService;
 
 class Transaction {
 
@@ -23,13 +23,13 @@ class Transaction {
     const UNCAPTURED = 'uncaptured';
 
     const STATUS_MAP = [
-        HeidiPayApiService::STATUS_APPROVED => Transaction::CONFIRMED,
-        HeidiPayApiService::STATUS_DECLINED => Transaction::DECLINED,
-        HeidiPayApiService::STATUS_PENDING => Transaction::WAITING,
-        HeidiPayApiService::STATUS_AWAITING => Transaction::WAITING,
-        HeidiPayApiService::STATUS_SUCCESS => Transaction::CONFIRMED,
-        HeidiPayApiService::STATUS_ACTIVE => Transaction::CONFIRMED,
-        HeidiPayApiService::STATUS_CANCELLED => Transaction::CANCELLED,
+        HeyLightApiService::STATUS_APPROVED => Transaction::CONFIRMED,
+        HeyLightApiService::STATUS_DECLINED => Transaction::DECLINED,
+        HeyLightApiService::STATUS_PENDING => Transaction::WAITING,
+        HeyLightApiService::STATUS_AWAITING => Transaction::WAITING,
+        HeyLightApiService::STATUS_SUCCESS => Transaction::CONFIRMED,
+        HeyLightApiService::STATUS_ACTIVE => Transaction::CONFIRMED,
+        HeyLightApiService::STATUS_CANCELLED => Transaction::CANCELLED,
     ];
 
     public static function mapStatus(string $status): string

@@ -1,9 +1,9 @@
 {% block sw_order_list_grid_columns %}
     {% parent() %}
 
-    {% block sw_order_list_grid_columns_heidipay_reference %}
+    {% block sw_order_list_grid_columns_heylight_reference %}
         <template #column-id="{ item }">
-            {{ getheidiPayReference(item)}}
+            {{ getExternalPayReference(item)}}
         </template>
     {% endblock %}
 

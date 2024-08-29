@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Service\ScheduledTask;
+namespace Go2FlowHeyLightPayment\Service\ScheduledTask;
 
-use Go2FlowHeidiPayPayment\Service\OrderService;
+use Go2FlowHeyLightPayment\Handler\TransactionHandler;
+use Go2FlowHeyLightPayment\Service\OrderService;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -32,8 +33,8 @@ class OrderTaskHandler extends ScheduledTaskHandler
         $this->scheduledTaskRepository = $scheduledTaskRepository;
         $this->orderService = $orderService;
 
-        $logger = new Logger('heidipay-status-cronjob');
-        $logger->pushHandler(new StreamHandler(__DIR__ . '/heidipay-status-cronjob.log'));
+        $logger = new Logger('heylight-status-cronjob');
+        $logger->pushHandler(new StreamHandler(__DIR__ . '/heylight-status-cronjob.log'));
         $this->logger = $logger;
     }
 
@@ -46,7 +47,7 @@ class OrderTaskHandler extends ScheduledTaskHandler
     {
         $iterator = $this->orderService->getOrdersIterator();
         while (($result = $iterator->fetch()) !== null) {
-            $this->logger->info('Heidipay: working on '.$result->getTotal().' Orders');
+            $this->logger->info('HeyLight: working on '.$result->getTotal().' Orders');
             $this->orderService->workOrders($result->getEntities());
         }
     }

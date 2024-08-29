@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Exception;
+namespace Go2FlowHeyLightPayment\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
 
@@ -19,7 +19,7 @@ class ConfigurationException extends ShopwareHttpException
 
     public function getErrorCode(): string
     {
-        return 'HEIDIPAY_POST_CONFIGURATION';
+        return 'HEYLIGHT_POST_CONFIGURATION';
     }
 
     public function getStatusCode(): int

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Controller;
+namespace Go2FlowHeyLightPayment\Controller;
 
-use Go2FlowHeidiPayPayment\Handler\TransactionHandler;
-use Go2FlowHeidiPayPayment\Helper\Transaction;
-use Go2FlowHeidiPayPayment\Service\WebhookService;
+use Go2FlowHeyLightPayment\Handler\TransactionHandler;
+use Go2FlowHeyLightPayment\Helper\Transaction;
+use Go2FlowHeyLightPayment\Service\WebhookService;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderException;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -46,7 +46,7 @@ class WebhookController extends AbstractController
      * @param Request $request
      * @param Context $context
      * @return JsonResponse
-     * @Route("/heidipay/webhook/status", name="frontend.heidipay.webhook.create", methods={"POST"})
+     * @Route("/heylight/webhook/status", name="frontend.heylight.webhook.create", methods={"POST"})
      */
     public function statusOld(Request $request, Context $context)
     {
@@ -58,7 +58,7 @@ class WebhookController extends AbstractController
      * @param Request $request
      * @param Context $context
      * @return JsonResponse
-     * @Route("/heidipay/webhook/{orderId}/status", name="frontend.heidipay.webhook.status", methods={"POST"})
+     * @Route("/heylight/webhook/{orderId}/status", name="frontend.heylight.webhook.status", methods={"POST"})
      */
     public function status(string $orderId, Request $request, Context $context)
     {
@@ -79,17 +79,17 @@ class WebhookController extends AbstractController
 
             $transactionCollection = $order->getTransactions();
             if ($transactionCollection === null) {
-                throw new InvalidOrderException($orderId);
+                throw PaymentException::invalidOrder($orderId);
             }
 
             $transaction = $transactionCollection->last();
             if ($transaction === null) {
-                throw new InvalidOrderException($orderId);
+                throw PaymentException::invalidOrder($orderId);
             }
             $status = Transaction::mapStatus($status);
             $this->transactionHandler->handleTransactionStatus($transaction, $status, $context);
         } else {
-            throw new InvalidOrderException($orderId);
+            throw PaymentException::invalidOrder($orderId);
         }
         return new JsonResponse(['success' => true]);
     }

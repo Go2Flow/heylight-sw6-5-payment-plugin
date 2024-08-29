@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Core\Content\WebhookTokens;
+namespace Go2FlowHeyLightPayment\Core\Content\WebhookTokens;
 
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;

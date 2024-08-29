@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace Go2FlowHeidiPayPayment\Core\Content\WebhookTokens;
+namespace Go2FlowHeyLightPayment\Core\Content\WebhookTokens;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
@@ -11,7 +11,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 class WebhookTokenDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'g2f_heidipay_webhook_token';
+    public const ENTITY_NAME = 'g2f_heylight_webhook_token';
     public function getEntityName(): string
     {
         return self::ENTITY_NAME;

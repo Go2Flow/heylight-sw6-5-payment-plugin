@@ -1,15 +1,15 @@
 <?php
 
 
-namespace Go2FlowHeidiPayPayment\Installer\Modules;
+namespace Go2FlowHeyLightPayment\Installer\Modules;
 
-use Go2FlowHeidiPayPayment\Go2FlowHeidiPayPayment;
-use Go2FlowHeidiPayPayment\Installer\InstallerInterface;
+use Go2FlowHeyLightPayment\Go2FlowHeyLightPayment;
+use Go2FlowHeyLightPayment\Installer\InstallerInterface;
 use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Content\Media\File\MediaFile;
 use Shopware\Core\Content\Media\MediaCollection;
 use Shopware\Core\Framework\Context;
-use Go2FlowHeidiPayPayment\Handler\PaymentHandler;
+use Go2FlowHeyLightPayment\Handler\PaymentHandler;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
@@ -27,29 +27,29 @@ class PaymentMethodInstaller implements InstallerInterface
     /**
      * @var string
      */
-    public const HEIDIPAY_METHOD = 'heidipay';
-    public const HEIDIPAY_CREDIT_METHOD = 'heidipay_credit';
+    public const HEYLIGHT_METHOD = 'heylight';
+    public const HEYLIGHT_CREDIT_METHOD = 'heylight_credit';
 
     const PAYMENT_METHODS = [
-        self::HEIDIPAY_METHOD => [
-            'icon' => 'heidipay-checkout-credit',
+        self::HEYLIGHT_METHOD => [
+            'icon' => 'heylight-checkout-credit',
             'translations' => [
                 'de-DE' => [
-                    'name' => 'HeidiPay - Ratenzahlung (0% Zinsen) ',
+                    'name' => 'HeyLight - Ratenzahlung (0% Zinsen) ',
                 ],
                 'en-GB' => [
-                    'name' => 'HeidiPay - Ratepay (0%)',
+                    'name' => 'HeyLight - Ratepay (0%)',
                 ],
             ],
         ],
-        self::HEIDIPAY_CREDIT_METHOD => [
-            'icon' => 'heidipay-checkout-credit',
+        self::HEYLIGHT_CREDIT_METHOD => [
+            'icon' => 'heylight-checkout-credit',
             'translations' => [
                 'de-DE' => [
-                    'name' => 'HeidiPay - Kredit',
+                    'name' => 'HeyLight - Kredit',
                 ],
                 'en-GB' => [
-                    'name' => 'HeidiPay - Credit',
+                    'name' => 'HeyLight - Credit',
                 ],
             ],
         ],
@@ -95,8 +95,8 @@ class PaymentMethodInstaller implements InstallerInterface
 
     public function activate(ActivateContext $context): void
     {
-        foreach (self::PAYMENT_METHODS as $heidiPayPaymentMethodIdentifier => $heidiPayPaymentMethod) {
-            $this->upsertPaymentMethod($context->getContext(), $heidiPayPaymentMethod, $heidiPayPaymentMethodIdentifier);
+        foreach (self::PAYMENT_METHODS as $heyLightPaymentMethodIdentifier => $heyLightPaymentMethod) {
+            $this->upsertPaymentMethod($context->getContext(), $heyLightPaymentMethod, $heyLightPaymentMethodIdentifier);
         }
 
         $paymentCriteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', PaymentHandler::class));
@@ -118,24 +118,24 @@ class PaymentMethodInstaller implements InstallerInterface
     }
 
     public function update(UpdateContext $context): void {
-        foreach (self::PAYMENT_METHODS as $heidiPayPaymentMethodIdentifier => $heidiPayPaymentMethod) {
-            $this->upsertPaymentMethod($context->getContext(), $heidiPayPaymentMethod, $heidiPayPaymentMethodIdentifier);
+        foreach (self::PAYMENT_METHODS as $heyLightPaymentMethodIdentifier => $heyLightPaymentMethod) {
+            $this->upsertPaymentMethod($context->getContext(), $heyLightPaymentMethod, $heyLightPaymentMethodIdentifier);
         }
     }
 
     /**
      * @param Context $context
-     * @param array $heidiPayPaymentMethod
-     * @param string $heidiPayPaymentMethodIdentifier
+     * @param array $heyLightPaymentMethod
+     * @param string $heyLightPaymentMethodIdentifier
      * @return void
      */
-    private function upsertPaymentMethod(Context $context, array $heidiPayPaymentMethod, string $heidiPayPaymentMethodIdentifier): void
+    private function upsertPaymentMethod(Context $context, array $heyLightPaymentMethod, string $heyLightPaymentMethodIdentifier): void
     {
-        $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(Go2FlowHeidiPayPayment::class, $context);
+        $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(Go2FlowHeyLightPayment::class, $context);
 
         $criteria = (new Criteria())
             ->addFilter(new EqualsFilter('handlerIdentifier', PaymentHandler::class))
-            ->addFilter(new EqualsFilter('customFields.heidipay_payment_method_name', PaymentHandler::PAYMENT_METHOD_PREFIX . $heidiPayPaymentMethodIdentifier))
+            ->addFilter(new EqualsFilter('customFields.heylight_payment_method_name', PaymentHandler::PAYMENT_METHOD_PREFIX . $heyLightPaymentMethodIdentifier))
             ->setLimit(1);
         $paymentMethods = $this->paymentMethodRepository->search($criteria, Context::createDefaultContext());
 
@@ -149,19 +149,19 @@ class PaymentMethodInstaller implements InstallerInterface
         }
 
         // Upload icon to the media repository
-        $mediaId = $this->getMediaId($heidiPayPaymentMethod['icon'], $context);
+        $mediaId = $this->getMediaId($heyLightPaymentMethod['icon'], $context);
 
         $options = [
             'id' => $paymentMethodId,
             'handlerIdentifier' => PaymentHandler::class,
-            'name' => $heidiPayPaymentMethod['translations']['en-GB']['name'],
-            'translations' => $heidiPayPaymentMethod['translations'],
+            'name' => $heyLightPaymentMethod['translations']['en-GB']['name'],
+            'translations' => $heyLightPaymentMethod['translations'],
             'active' => $paymentMethodActive,
             'pluginId' => $pluginId,
             'mediaId' => $mediaId,
-            'technicalName' => PaymentHandler::PAYMENT_METHOD_PREFIX . $heidiPayPaymentMethodIdentifier,
+            'technicalName' => PaymentHandler::PAYMENT_METHOD_PREFIX . $heyLightPaymentMethodIdentifier,
             'customFields' => [
-                'heidipay_payment_method_name' => PaymentHandler::PAYMENT_METHOD_PREFIX . $heidiPayPaymentMethodIdentifier,
+                'heylight_payment_method_name' => PaymentHandler::PAYMENT_METHOD_PREFIX . $heyLightPaymentMethodIdentifier,
             ]
         ];
 
@@ -211,7 +211,7 @@ class PaymentMethodInstaller implements InstallerInterface
         // Add icon to the media library
         $iconMime = 'image/svg+xml';
         $iconExt = 'svg';
-        $iconBlob = (string)file_get_contents(Go2FlowHeidiPayPayment::CREDIT_CHECKOUT_IMAGE);
+        $iconBlob = (string)file_get_contents(Go2FlowHeyLightPayment::CREDIT_CHECKOUT_IMAGE);
 
         return $this->saveFile(
             $iconBlob,
@@ -219,7 +219,7 @@ class PaymentMethodInstaller implements InstallerInterface
             $iconMime,
             $paymentMethod,
             $context,
-            'HeidiPay Payments - Icons',
+            'HeyLight Payments - Icons',
             null,
             false
         );

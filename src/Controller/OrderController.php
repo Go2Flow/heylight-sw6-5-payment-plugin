@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Go2FlowHeidiPayPayment\Controller;
+namespace Go2FlowHeyLightPayment\Controller;
 
-use Go2FlowHeidiPayPayment\Service\OrderService;
+use Go2FlowHeyLightPayment\Service\OrderService;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Shopware\Core\Framework\Context;
@@ -43,7 +43,7 @@ class OrderController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/heidipay_order_service/refund", name="api.action.heidipay_order_service.refund", methods={"POST"})
+     * @Route("/api/_action/heylight_order_service/refund", name="api.action.heylight_order_service.refund", methods={"POST"})
      * @throws \Exception
      */
     public function fullRefund(Request $request, Context $context): JsonResponse
