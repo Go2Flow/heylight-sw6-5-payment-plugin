@@ -16,6 +16,7 @@ Component.register('heylight-settings', {
     data() {
         return {
             isLoading: false,
+            salesChannelId: null,
             isTesting: false,
             isSaveSuccessful: false,
             isTestSuccessful: false,
