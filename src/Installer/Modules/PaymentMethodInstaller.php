@@ -35,7 +35,7 @@ class PaymentMethodInstaller implements InstallerInterface
             'icon' => 'heylight-checkout-credit',
             'translations' => [
                 'de-DE' => [
-                    'name' => 'HeyLight - Ratenzahlung (0% Zinsen) ',
+                    'name' => 'HeyLight - Ratenzahlung (0% interest)',
                 ],
                 'en-GB' => [
                     'name' => 'HeyLight - Ratepay (0%)',
@@ -46,7 +46,7 @@ class PaymentMethodInstaller implements InstallerInterface
             'icon' => 'heylight-checkout-credit',
             'translations' => [
                 'de-DE' => [
-                    'name' => 'HeyLight - Kredit',
+                    'name' => 'HeyLight - Finanzierung',
                 ],
                 'en-GB' => [
                     'name' => 'HeyLight - Credit',

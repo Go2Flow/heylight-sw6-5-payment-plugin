@@ -31,7 +31,7 @@ class Go2FlowHeyLightPayment extends Plugin
 {
 
     const HEYLIGHT_CURRENT_VERSION = '1.0.0';
-    const CREDIT_CHECKOUT_IMAGE = 'https://storage.googleapis.com/heidi-public-images/heidipay_upstream_inline_logos/heidipay_cards_qr.svg';
+    const CREDIT_CHECKOUT_IMAGE = 'https://storage.googleapis.com/heidi-public-images/heylight_assets/heylight_pill_white_on_black_24px.svg';
 
     /**
      * @param ContainerBuilder $container
