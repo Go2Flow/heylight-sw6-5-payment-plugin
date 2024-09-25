@@ -1,7 +1,7 @@
 {
   "name": "heylight/ecom-shopware-6-5",
-  "version": "1.0.0",
-  "description": "HeyLight Shopware 6 Plugin",
+  "version": "1.0.1",
+  "description": "HeyLight Shopware 6.5 Plugin",
   "type": "shopware-platform-plugin",
   "license": "proprietary",
   "authors": [
@@ -25,8 +25,8 @@
     "copyright": "(c) by go2flow",
     "plugin-icon": "src/Resources/config/plugin.png",
     "label": {
-      "de-DE": "HeyLight Shopware 6",
-      "en-GB": "HeyLight Shopware 6"
+      "de-DE": "HeyLight Shopware 6.5",
+      "en-GB": "HeyLight Shopware 6.5"
     },
   "description": {
       "de-DE": "Steigern Sie Ihren Onlineshop-Umsatz um bis zu 30%., indem Sie Ihren Kunden eine einfache Möglichkeit bieten Bestellungen einfach per Kreditkarte in Raten zu bezahlen. ",

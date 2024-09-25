@@ -167,13 +167,10 @@ class HeyLightApiService
     {
         try {
             $token = $this->getAuthTransactionToken($salesChannelContext->getSalesChannelId());
-
-            $paymentMethod = $order->getTransactions()->last()->getPaymentMethod()->getTechnicalName();
-            if ($paymentMethod === (PaymentHandler::PAYMENT_METHOD_PREFIX.PaymentMethodInstaller::HEYLIGHT_CREDIT_METHOD)) {
-                $productType = 'CREDIT';
+            $productType = $this->getPaymentType($order, $salesChannelContext);
+            if ($productType === 'CREDIT') {
                 $terms = $this->getConfigValue( 'promotionTermsCredit' , $salesChannelContext );
             } else {
-                $productType = 'BNPL';
                 $terms = $this->getConfigValue( 'promotionTerms' , $salesChannelContext );
             }
             $webhookToken = $this->webhookService->createToken($order->getId(), $salesChannelContext->getContext(), WebhookService::ACTION_STATUS);
@@ -320,6 +317,23 @@ class HeyLightApiService
         }
 
         return true;
+    }
+
+    private function getPaymentType(OrderEntity $order, SalesChannelContext $salesChannelContext): string
+    {
+        $technicalName = null;
+        $paymentMethod = $order->getTransactions()->last()->getPaymentMethod();
+        if (method_exists($paymentMethod, 'getTechnicalName')) {
+            $technicalName = $paymentMethod->getTechnicalName();
+        } else {
+            $customFields = $paymentMethod->getCustomFields();
+            if(!empty($customFields['heylight_payment_method_name'])) {
+                $technicalName = $customFields['heylight_payment_method_name'];
+            }
+        }
+        return (
+            $technicalName === (PaymentHandler::PAYMENT_METHOD_PREFIX.PaymentMethodInstaller::HEYLIGHT_CREDIT_METHOD)
+        )?'CREDIT':'BNPL';
     }
 
 
