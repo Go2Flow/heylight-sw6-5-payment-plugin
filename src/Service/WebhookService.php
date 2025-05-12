@@ -29,8 +29,15 @@ class WebhookService
         if ($token === $orderId) {
             return true;
         }
-        $random = $this->loadTokenRandom($orderId, $action, $context);
-        return ($random && $this->createToken($orderId, $context, $action, $random) === $token);
+        $randoms = $this->loadTokenRandom($orderId, $action, $context);
+        $result = false;
+        foreach ($randoms as $random) {
+            if ($this->createToken($orderId, $context, $action, $random) === $token) {
+                $result = true;
+                break;
+            }
+        }
+        return $result;
     }
 
     public function storeToken(string $orderId, string $action, string $random, Context $context): void
@@ -45,19 +52,22 @@ class WebhookService
         $this->webhookTokenRepository->create([$data], $context);
     }
 
-    public function loadTokenRandom(string $orderId, string $action, Context $context): ?string
+    public function loadTokenRandom(string $orderId, string $action, Context $context): array
     {
         $criteria = new Criteria();
-        $criteria->setLimit(1);
         $criteria->addFilter(
             new EqualsFilter('orderId', $orderId)
         );
         $criteria->addFilter(
             new EqualsFilter('action', $action)
         );
+        $webhookTokenEntities = $this->webhookTokenRepository->search($criteria, $context)->getEntities();
+        $result = [];
         /** @var WebhookTokenEntity $webhookTokenEntity */
-        $webhookTokenEntity = $this->webhookTokenRepository->search($criteria, $context)->first();
-        return $webhookTokenEntity?->getRandom();
+        foreach ($webhookTokenEntities as $webhookTokenEntity) {
+            $result[] = $webhookTokenEntity->getRandom();
+        }
+        return $result;
     }
 
     public function createToken(string $orderId, Context $context, string $action = self::ACTION_STATUS, ?string $random = null): string
