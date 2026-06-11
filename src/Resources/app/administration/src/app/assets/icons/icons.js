@@ -1,26 +1,13 @@
-export default (() => {
-    const context = require.context('./svg', false, /svg$/);
-    return context.keys().reduce((accumulator, item) => {
-        const componentName = item.split('.')[1].split('/')[1];
-        const component = {
-            name: componentName,
-            functional: true,
-            render(createElement, elementContext) {
-                const data = elementContext.data;
+const svgFiles = import.meta.glob('./svg/*.svg', { eager: true, query: '?raw', import: 'default' });
 
-                return createElement('span', {
-                    class: [data.staticClass, data.class],
-                    style: data.style,
-                    attrs: data.attrs,
-                    on: data.on,
-                    domProps: {
-                        innerHTML: context(item),
-                    },
-                });
-            },
-        };
+export default Object.entries(svgFiles).map(([path, svgContent]) => {
+    const componentName = path.split('/').pop().replace('.svg', '');
 
-        accumulator.push(component);
-        return accumulator;
-    }, []);
-})();
+    return {
+        name: componentName,
+        template: '<span class="heylight-icon" v-html="svgContent"></span>',
+        data() {
+            return { svgContent };
+        },
+    };
+});
