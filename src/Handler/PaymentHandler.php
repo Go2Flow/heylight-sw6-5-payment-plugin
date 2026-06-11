@@ -26,7 +26,7 @@ class PaymentHandler extends AbstractPaymentHandler
 
     const PAYMENT_METHOD_PREFIX = 'heylight_';
     const BASE_URL = 'https://origination.heidipay.com';
-    const SANDBOX_BASE_URL = 'https://sandbox-origination.heidipay.com';
+    const SANDBOX_BASE_URL = 'https://sbx-origination.heidipay.io';
 
     /**
      * @var OrderTransactionStateHandler

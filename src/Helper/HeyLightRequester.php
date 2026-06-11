@@ -90,6 +90,8 @@ class HeyLightRequester {
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 0 );
         curl_setopt( $ch, CURLOPT_HEADER, 0 );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 15 );
         $contents = curl_exec( $ch );
         $code     = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
         curl_close( $ch );
