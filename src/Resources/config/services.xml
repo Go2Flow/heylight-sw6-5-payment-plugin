@@ -28,7 +28,7 @@
             <argument type="service" id="Go2FlowHeyLightPayment\Service\HeyLightApiService" />
             <argument type="service" id="Go2FlowHeyLightPayment\Handler\TransactionHandler" />
             <argument type="service" id="monolog.logger.g2f_heylight_payment_plugin"/>
-            <tag name="shopware.payment.method.async" />
+            <tag name="shopware.payment.method" />
         </service>
 
         <service id="Go2FlowHeyLightPayment\Handler\TransactionHandler">
@@ -65,6 +65,7 @@
 
         <service id="Go2FlowHeyLightPayment\Service\ScheduledTask\OrderTaskHandler">
             <argument type="service" id="scheduled_task.repository" />
+            <argument type="service" id="monolog.logger.g2f_heylight_payment_plugin" />
             <argument type="service" id="Go2FlowHeyLightPayment\Service\OrderService" />
             <tag name="messenger.message_handler" />
         </service>

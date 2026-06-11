@@ -7,22 +7,21 @@ namespace Go2FlowHeyLightPayment\Handler;
 use Go2FlowHeyLightPayment\Helper\Transaction;
 use Go2FlowHeyLightPayment\Service\HeyLightApiService;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AbstractPaymentHandler;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerType;
+use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\PaymentException;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Framework\Struct\Struct;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 
-class PaymentHandler implements AsynchronousPaymentHandlerInterface
+class PaymentHandler extends AbstractPaymentHandler
 {
 
     const PAYMENT_METHOD_PREFIX = 'heylight_';
@@ -75,39 +74,43 @@ class PaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->logger = $logger;
     }
 
+    public function supports(PaymentHandlerType $type, string $paymentMethodId, Context $context): bool
+    {
+        return false;
+    }
+
     /**
      * Redirects to the payment page
      *
-     * @param AsyncPaymentTransactionStruct $transaction
-     * @param RequestDataBag $dataBag
-     * @param SalesChannelContext $salesChannelContext
-     * @return RedirectResponse
+     * @param Request $request
+     * @param PaymentTransactionStruct $transaction
+     * @param Context $context
+     * @param Struct|null $validateStruct
+     * @return RedirectResponse|null
      */
-    public function pay(AsyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): RedirectResponse
+    public function pay(Request $request, PaymentTransactionStruct $transaction, Context $context, ?Struct $validateStruct): ?RedirectResponse
     {
-        $orderTransaction = $transaction->getOrderTransaction();
-        $order = $transaction->getOrder();
+        $transactionId = $transaction->getOrderTransactionId();
+        $orderTransaction = $this->getOrderTransaction($transactionId, $context);
+        $order = $orderTransaction->getOrder();
         $totalAmount = $orderTransaction->getAmount()->getTotalPrice();
-        $transactionId = $orderTransaction->getId();
-        $productRepository = $this->container->get('product.repository');
 
         // Workaround if amount is 0
         if ($totalAmount <= 0) {
-            $redirectUrl = $transaction->getReturnUrl();
-            return new RedirectResponse($redirectUrl);
+            $this->transactionStateHandler->paid($transactionId, $context);
+            return null;
         }
 
-        // Create HeidiPay Link for checkout and redirect user
+        // Create HeyLight Link for checkout and redirect user
         try {
             $gateway = $this->heyLightApiService->processPayment(
                 $order,
-                $transaction->getReturnUrl(),
-                $productRepository,
-                $salesChannelContext
+                (string) $transaction->getReturnUrl(),
+                $context
             );
 
             $this->transactionHandler->saveTransactionCustomFields(
-                $salesChannelContext,
+                $context,
                 $transactionId,
                 [ 'external_contract_uuid' => $gateway['external_contract_uuid'] ]
             );
@@ -124,26 +127,25 @@ class PaymentHandler implements AsynchronousPaymentHandlerInterface
     }
 
     /**
-     * @param AsyncPaymentTransactionStruct $transaction
      * @param Request $request
-     * @param SalesChannelContext $salesChannelContext
+     * @param PaymentTransactionStruct $transaction
+     * @param Context $context
      */
-    public function finalize(AsyncPaymentTransactionStruct $transaction, Request $request, SalesChannelContext $salesChannelContext): void
+    public function finalize(Request $request, PaymentTransactionStruct $transaction, Context $context): void
     {
-        $context = $salesChannelContext->getContext();
+        $transactionId = $transaction->getOrderTransactionId();
+        $orderTransaction = $this->getOrderTransaction($transactionId, $context);
+        $order = $orderTransaction->getOrder();
 
         $heyLightTransactionStatus = OrderTransactionStates::STATE_OPEN;
 
-        $orderTransaction = $transaction->getOrderTransaction();
         $stateMachineState = $orderTransaction->getStateMachineState();
         if (!$stateMachineState) {
-            $stateMachineState = $this->transactionHandler->getStateMachineState($orderTransaction->getStateId(), $salesChannelContext->getContext());
+            $stateMachineState = $this->transactionHandler->getStateMachineState($orderTransaction->getStateId(), $context);
         }
 
-
         $customFields = $orderTransaction->getCustomFields();
-        $externalContractUuid = $customFields['external_contract_uuid'];
-        $transactionId = $orderTransaction->getId();
+        $externalContractUuid = $customFields['external_contract_uuid'] ?? null;
         $totalAmount = $orderTransaction->getAmount()->getTotalPrice();
 
         if ($totalAmount <= 0) {
@@ -159,9 +161,9 @@ class PaymentHandler implements AsynchronousPaymentHandlerInterface
             );
         }
 
-        $orderStatus = $this->heyLightApiService->checkOrderStatus( $externalContractUuid, $salesChannelContext );
-
-
+        $orderStatus = $externalContractUuid
+            ? $this->heyLightApiService->checkOrderStatus($externalContractUuid, $order->getSalesChannelId())
+            : false;
 
         if ( ( !$externalContractUuid || !$orderStatus ) && $totalAmount > 0) {
             throw PaymentException::customerCanceled(
@@ -186,103 +188,30 @@ class PaymentHandler implements AsynchronousPaymentHandlerInterface
     }
 
     /**
-     * @param OrderEntity $order
-     * @param $totalAmount
-     * @param $salesChannelContext
-     * @return array
+     * Loads the order transaction including all order associations needed
+     * for building the HeyLight payment request.
      */
-    private function collectBasketData(OrderEntity $order, $totalAmount, $salesChannelContext):array
+    private function getOrderTransaction(string $transactionId, Context $context): OrderTransactionEntity
     {
-        // Collect basket data
-        $basketTotal = 0;
-        $basket = [];
+        $transactionRepo = $this->container->get('order_transaction.repository');
 
-        $lineItemElements = [];
-        if ($order->getLineItems()) {
-            $lineItemElements = $order->getLineItems()->getElements();
-        }
-        foreach ($lineItemElements as $item) {
-            $unitPrice = $item->getUnitPrice();
-            $quantity = $item->getQuantity();
+        $criteria = new Criteria([$transactionId]);
+        $criteria->addAssociation('stateMachineState');
+        $criteria->addAssociation('paymentMethod');
+        $criteria->addAssociation('order.lineItems');
+        $criteria->addAssociation('order.currency');
+        $criteria->addAssociation('order.orderCustomer');
+        $criteria->addAssociation('order.billingAddress.country');
+        $criteria->addAssociation('order.salesChannel.domains');
+        $criteria->addAssociation('order.transactions.paymentMethod');
 
-            $basket[] = [
-                'name' => $item->getLabel(),
-                'description' => $item->getDescription(),
-                'quantity' => $item->getQuantity(),
-                'amount' => $unitPrice * 100,
-                'sku' => $item->getPayload()['productNumber'] ?? '',
-            ];
-            $basketTotal += $unitPrice * $quantity;
+        /** @var OrderTransactionEntity|null $orderTransaction */
+        $orderTransaction = $transactionRepo->search($criteria, $context)->first();
+
+        if ($orderTransaction === null || $orderTransaction->getOrder() === null) {
+            throw PaymentException::invalidTransaction($transactionId);
         }
 
-        $shippingMethodRepo = $this->container->get('shipping_method.repository');
-
-        $deliveryElements = [];
-        if ($order->getDeliveries()) {
-            $deliveryElements = $order->getDeliveries()->getElements();
-        }
-        foreach ($deliveryElements as $delivery) {
-            $shippingCriteria = (new Criteria())->addFilter(
-                new EqualsFilter('id', $delivery->getShippingMethodId())
-            );
-            $shippingMethod = $shippingMethodRepo->search($shippingCriteria, $salesChannelContext->getContext())->first();
-
-            $unitPrice = $delivery->getShippingCosts()->getUnitPrice() ;
-            $quantity = $delivery->getShippingCosts()->getQuantity();
-
-            $basket[] = [
-                'name' => $shippingMethod->getTranslated()['name'] ?: $shippingMethod->getName(),
-                'description' => $shippingMethod->getTranslated()['description'] ?: $shippingMethod->getDescription(),
-                'quantity' => $quantity,
-                'amount' => $unitPrice * 100,
-                'sku' => $shippingMethod->getId(),
-            ];
-            $basketTotal += $unitPrice * $quantity;
-        }
-
-        $taxElements = [];
-        if ($order->getPrice() && $order->getPrice()->getCalculatedTaxes()) {
-            $taxElements = $order->getPrice()->getCalculatedTaxes();
-        }
-        if ($order->getTaxStatus() === CartPrice::TAX_STATE_NET) {
-            foreach ($taxElements as $tax) {
-                $unitPrice = $tax->getTax();
-                $quantity = 1;
-                $basket[] = [
-                    'name' => 'Tax ' . $tax->getTaxRate() . '%',
-                    'quantity' => $quantity,
-                    'amount' => $unitPrice * 100,
-                ];
-                $basketTotal += $unitPrice;
-            }
-        }
-
-        if ($totalAmount !== $basketTotal) {
-            return [];
-        }
-
-        return $basket;
-    }
-
-    /**
-     * @param OrderEntity $order
-     * @return float
-     */
-    private function getAverageTaxRate(OrderEntity $order): float
-    {
-        if (!$order->getPrice() || !$order->getPrice()->getCalculatedTaxes()) {
-            return 0;
-        }
-
-        $taxRate = 0;
-        $finalTaxRate = 0;
-        $taxElements = $order->getPrice()->getCalculatedTaxes();
-
-        if (!count($taxElements)) return $finalTaxRate;
-        foreach ($taxElements as $tax) {
-            $taxRate += $tax->getTaxRate();
-        }
-
-        return ($taxRate / count($taxElements));
+        return $orderTransaction;
     }
 }

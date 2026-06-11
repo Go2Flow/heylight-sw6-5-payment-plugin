@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Go2FlowHeyLightPayment\Controller;
 
 use Go2FlowHeyLightPayment\Service\OrderService;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 use Shopware\Core\Framework\Context;
 use Psr\Log\LoggerInterface;
@@ -15,9 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class OrderController extends AbstractController
 {
     /**
@@ -43,9 +41,9 @@ class OrderController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/heylight_order_service/refund", name="api.action.heylight_order_service.refund", methods={"POST"})
      * @throws \Exception
      */
+    #[Route(path: '/api/_action/heylight_order_service/refund', name: 'api.action.heylight_order_service.refund', methods: ['POST'])]
     public function fullRefund(Request $request, Context $context): JsonResponse
     {
         $response = $this->orderService->fullRefund($request->get('transaction'), $context);

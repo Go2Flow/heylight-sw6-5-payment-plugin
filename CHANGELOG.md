@@ -1,3 +1,5 @@
+# 2.0.0
+- Compatibility with Shopware 6.7 (new payment handler API, attribute routing, Vue 3 administration)
 # 1.0.2
 - Fixed a Bug where an order hat multiple webhooks and thus could not be validated correctly
 # 1.0.1

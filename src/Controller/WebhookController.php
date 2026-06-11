@@ -10,7 +10,7 @@ use Go2FlowHeyLightPayment\Service\WebhookService;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Framework\Context;
@@ -20,9 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @Route(defaults={"_routeScope"={"storefront"}})
- */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class WebhookController extends AbstractController
 {
     private EntityRepository $orderRepository;
@@ -42,12 +40,12 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @deprecated remove in version 2.0.0
+     * @deprecated remove in version 3.0.0
      * @param Request $request
      * @param Context $context
      * @return JsonResponse
-     * @Route("/heylight/webhook/status", name="frontend.heylight.webhook.create", methods={"POST"})
      */
+    #[Route(path: '/heylight/webhook/status', name: 'frontend.heylight.webhook.create', methods: ['POST'])]
     public function statusOld(Request $request, Context $context)
     {
         return $this->status($request->get('token', ''), $request, $context);
@@ -58,8 +56,8 @@ class WebhookController extends AbstractController
      * @param Request $request
      * @param Context $context
      * @return JsonResponse
-     * @Route("/heylight/webhook/{orderId}/status", name="frontend.heylight.webhook.status", methods={"POST"})
      */
+    #[Route(path: '/heylight/webhook/{orderId}/status', name: 'frontend.heylight.webhook.status', methods: ['POST'])]
     public function status(string $orderId, Request $request, Context $context)
     {
         $token = $request->get('token', null);

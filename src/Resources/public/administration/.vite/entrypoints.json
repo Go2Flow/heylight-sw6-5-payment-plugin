@@ -1,0 +1,25 @@
+{
+  "base": "/bundles/go2flowheylightpayment/administration/",
+  "entryPoints": {
+    "go2-flow-hey-light-payment": {
+      "css": [
+        "/bundles/go2flowheylightpayment/administration/assets/go2-flow-hey-light-payment-j1TAEls8.css"
+      ],
+      "dynamic": [],
+      "js": [
+        "/bundles/go2flowheylightpayment/administration/assets/go2-flow-hey-light-payment-BS1ss-z0.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}

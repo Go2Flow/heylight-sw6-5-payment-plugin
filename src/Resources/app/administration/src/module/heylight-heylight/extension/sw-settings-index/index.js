@@ -4,5 +4,11 @@ import './sw-settings.index.scss';
 const { Component } = Shopware;
 
 Component.override('sw-settings-index', {
-    template
+    template,
+
+    computed: {
+        assetFilter() {
+            return Shopware.Filter.getByName('asset');
+        },
+    },
 });

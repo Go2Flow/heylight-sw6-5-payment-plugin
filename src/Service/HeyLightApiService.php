@@ -9,7 +9,7 @@ use Go2FlowHeyLightPayment\Helper\OrderHelper;
 use Go2FlowHeyLightPayment\Installer\Modules\PaymentMethodInstaller;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class HeyLightApiService
@@ -82,17 +82,6 @@ class HeyLightApiService
 
     /**
      * @param string $option
-     * @param SalesChannelContext|null $salesChannelContext
-     * @return mixed
-     */
-    private function getConfigValue(string $option, SalesChannelContext $salesChannelContext = null)
-    {
-        $salesChannelId = $salesChannelContext?->getSalesChannelId();
-        return $this->getConfigValueByChannelId($option, $salesChannelId);
-    }
-
-    /**
-     * @param string $option
      * @param string|null $salesChannelId
      * @return bool|float|int|mixed[]|string|null
      */
@@ -101,7 +90,7 @@ class HeyLightApiService
         return $this->configService->get('Go2FlowHeyLightPayment.settings.'.$option, $salesChannelId);
     }
 
-    private function getAuthTransactionToken(string $salesChannelContextId = null) {
+    private function getAuthTransactionToken(?string $salesChannelContextId = null) {
         $merchant_key = $this->getConfigValueByChannelId( 'secretKey' , $salesChannelContextId );
 
         if ( ! $merchant_key ) return false;
@@ -123,13 +112,13 @@ class HeyLightApiService
         return $responseData['data']['token'];
     }
 
-    public function testAuthTransactionToken($token, SalesChannelContext $salesChannelContext = null) {
+    public function testAuthTransactionToken($token, ?string $salesChannelId = null) {
 
         if ( ! $token ) return false;
 
         $body = [ 'merchant_key' => $token ];
 
-        $url =  $this->getQualifiedApiUrl($salesChannelContext).$this->auth_url;
+        $url =  $this->getApiUrl($salesChannelId).$this->auth_url;
 
         $request_util = new HeyLightRequester();
         $request_util->setUrl( $url );
@@ -144,17 +133,7 @@ class HeyLightApiService
         return $responseData['data']['token'];
     }
 
-    /**
-     * @deprecated use getApiUrl
-     * @param SalesChannelContext|null $salesChannelContext
-     * @return string
-     */
-    private function getQualifiedApiUrl(SalesChannelContext $salesChannelContext = null): string
-    {
-        return $this->getApiUrl($salesChannelContext?->getSalesChannelId());
-    }
-
-    private function getApiUrl(string $salesChannelId = null): string
+    private function getApiUrl(?string $salesChannelId = null): string
     {
         $mode = $this->getConfigValueByChannelId( 'mode' , $salesChannelId );
         if($mode != '1') {
@@ -163,20 +142,21 @@ class HeyLightApiService
         return PaymentHandler::BASE_URL.'/';
     }
 
-    public function processPayment(OrderEntity $order, string $url, $productRepository, SalesChannelContext $salesChannelContext): ?array
+    public function processPayment(OrderEntity $order, string $url, Context $context): ?array
     {
         try {
-            $token = $this->getAuthTransactionToken($salesChannelContext->getSalesChannelId());
-            $productType = $this->getPaymentType($order, $salesChannelContext);
+            $salesChannelId = $order->getSalesChannelId();
+            $token = $this->getAuthTransactionToken($salesChannelId);
+            $productType = $this->getPaymentType($order);
             if ($productType === 'CREDIT') {
-                $terms = $this->getConfigValue( 'promotionTermsCredit' , $salesChannelContext );
+                $terms = $this->getConfigValueByChannelId( 'promotionTermsCredit' , $salesChannelId );
             } else {
-                $terms = $this->getConfigValue( 'promotionTerms' , $salesChannelContext );
+                $terms = $this->getConfigValueByChannelId( 'promotionTerms' , $salesChannelId );
             }
-            $webhookToken = $this->webhookService->createToken($order->getId(), $salesChannelContext->getContext(), WebhookService::ACTION_STATUS);
+            $webhookToken = $this->webhookService->createToken($order->getId(), $context, WebhookService::ACTION_STATUS);
 
-            $body = OrderHelper::prepareOrderData( $order, $url, $terms, $productType, $webhookToken, $salesChannelContext, $this->configService );
-            $url = $this->getApiUrl($salesChannelContext->getSalesChannelId()).$this->init_trans_url;
+            $body = OrderHelper::prepareOrderData( $order, $url, $terms, $productType, $webhookToken, $this->configService );
+            $url = $this->getApiUrl($salesChannelId).$this->init_trans_url;
 
             $request_util = new HeyLightRequester();
             $request_util->addHeader( 'Authorization', 'Token ' . $token );
@@ -204,15 +184,15 @@ class HeyLightApiService
 
     /**
      * @param string $external_contract_uuid
-     * @param SalesChannelContext $salesChannelContext
+     * @param string|null $salesChannelId
      * @return bool
      */
-    public function checkOrderStatus(string $external_contract_uuid , SalesChannelContext $salesChannelContext)
+    public function checkOrderStatus(string $external_contract_uuid , ?string $salesChannelId = null)
     {
 
-        $token = $this->getAuthTransactionToken($salesChannelContext->getSalesChannelId());
+        $token = $this->getAuthTransactionToken($salesChannelId);
 
-        $url = $this->getQualifiedApiUrl($salesChannelContext).$this->contract_status_url.$external_contract_uuid.'/';
+        $url = $this->getApiUrl($salesChannelId).$this->contract_status_url.$external_contract_uuid.'/';
 
         $request_util = new HeyLightRequester();
         $request_util->addHeader( 'Authorization', 'Token ' . $token );
@@ -319,7 +299,7 @@ class HeyLightApiService
         return true;
     }
 
-    private function getPaymentType(OrderEntity $order, SalesChannelContext $salesChannelContext): string
+    private function getPaymentType(OrderEntity $order): string
     {
         $technicalName = null;
         $paymentMethod = $order->getTransactions()->last()->getPaymentMethod();

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Go2FlowHeyLightPayment\Controller;
 
 use Go2FlowHeyLightPayment\Service\HeyLightApiService;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 use Shopware\Core\Framework\Context;
 use Psr\Log\LoggerInterface;
@@ -15,9 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class SettingsController extends AbstractController
 {
     /**
@@ -47,9 +45,9 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/heylight_settings_service/validate-api-credentials", name="api.action.heylight_settings_service.validate.api.credentials", methods={"POST"})
      * @throws \Exception
      */
+    #[Route(path: '/api/_action/heylight_settings_service/validate-api-credentials', name: 'api.action.heylight_settings_service.validate.api.credentials', methods: ['POST'])]
     public function validateApiCredentials(Request $request, Context $context): JsonResponse
     {
         $error = false;
