@@ -109,6 +109,23 @@ class PaymentHandler extends AbstractPaymentHandler
                 $context
             );
 
+            if (
+                !\is_array($gateway)
+                || empty($gateway['external_contract_uuid'])
+                || empty($gateway['redirect_url'])
+            ) {
+                $this->logger->error('HeyLight: invalid processPayment response', [
+                    'orderId'       => $order->getId(),
+                    'transactionId' => $transactionId,
+                    'response'      => $gateway,
+                ]);
+
+                throw PaymentException::asyncProcessInterrupted(
+                    $transactionId,
+                    'HeyLight did not return a valid payment session.'
+                );
+            }
+
             $this->transactionHandler->saveTransactionCustomFields(
                 $context,
                 $transactionId,
@@ -116,7 +133,9 @@ class PaymentHandler extends AbstractPaymentHandler
             );
 
             $redirectUrl = $gateway['redirect_url'] ;
-        } catch (\Exception $e) {
+        } catch (PaymentException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
             throw PaymentException::asyncProcessInterrupted(
                 $transactionId,
                 'An error occurred during the communication with external payment gateway' . PHP_EOL . $e->getMessage()

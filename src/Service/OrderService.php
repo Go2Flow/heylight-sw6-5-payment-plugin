@@ -102,7 +102,7 @@ class OrderService
         $channels = [];
         foreach ($orders as $order) {
             $channelId = $order->getSalesChannelId();
-            if (!in_array($channelId, $channels)) {
+            if (!array_key_exists($channelId, $channels)) {
                 $channels[$channelId] = [];
             }
             $transaction = $order->getTransactions()->first();
@@ -116,23 +116,29 @@ class OrderService
         }
         $newStatusResult = [];
         foreach ($channels as $channelId => $externalIds) {
+            if (empty($externalIds)) {
+                continue;
+            }
             foreach ($this->heyLightApiService->getOrderStatus($externalIds, $channelId) as $statusItem) {
-                $newStatusResult[$statusItem['external_contract_uuid']] = $statusItem['status'];
+                if (empty($statusItem['external_uuid']) || !isset($statusItem['status'])) {
+                    continue;
+                }
+                $newStatusResult[$statusItem['external_uuid']] = $statusItem['status'];
             }
         }
+        $context = Context::createDefaultContext();
         foreach ($orders as $order) {
             $transaction = $order->getTransactions()->first();
-            $externalId = $transaction->getCustomFields()['external_contract_uuid'];
-            if (in_array($externalId, $newStatusResult)) {
-                $newStatus = $newStatusResult[$externalId];
+            $externalId = $transaction?->getCustomFields()['external_contract_uuid'] ?? null;
+            if ($externalId === null || !array_key_exists($externalId, $newStatusResult)) {
+                continue;
             }
-            if (isset($newStatus)) {
-                $this->transactionHandler->handleTransactionStatus(
-                    $transaction,
-                    Transaction::mapStatus($newStatus),
-                    Context::createDefaultContext()
-                );
-            }
+            $newStatus = $newStatusResult[$externalId];
+            $this->transactionHandler->handleTransactionStatus(
+                $transaction,
+                Transaction::mapStatus($newStatus),
+                $context
+            );
         }
     }
 

@@ -1,5 +1,4 @@
 import './components/heylight-settings-icon';
-import './extension/sw-settings-index';
 import './page/heylight-settings';
 import './page/heylight-order-detail';
 

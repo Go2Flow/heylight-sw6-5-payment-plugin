@@ -35,7 +35,7 @@ class OrderHelper {
 		$requestData = array(
 			'amount_format'       => 'DECIMAL',
 			'amount'              => [
-				'amount'   => self::getFormattedPrice( $templateFunctions->addFee( $order->getAmountTotal() ) ),
+				'amount'   => self::getFormattedPrice( $order->getAmountTotal() ),
 				'currency' => $order->getCurrency()->getIsoCode(),
             ],
 			'redirect_urls'       => [

@@ -3,11 +3,11 @@
   "entryPoints": {
     "go2-flow-hey-light-payment": {
       "css": [
-        "/bundles/go2flowheylightpayment/administration/assets/go2-flow-hey-light-payment-j1TAEls8.css"
+        "/bundles/go2flowheylightpayment/administration/assets/go2-flow-hey-light-payment-CNiogHhE.css"
       ],
       "dynamic": [],
       "js": [
-        "/bundles/go2flowheylightpayment/administration/assets/go2-flow-hey-light-payment-ZLuPIx1R.js"
+        "/bundles/go2flowheylightpayment/administration/assets/go2-flow-hey-light-payment-kB-APad0.js"
       ],
       "legacy": false,
       "preload": []
