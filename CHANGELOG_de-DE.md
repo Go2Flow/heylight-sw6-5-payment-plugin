@@ -1,3 +1,6 @@
+# 2.0.4
+- Fehlerbehebung: Tippfehler in der Admin-Einstellungsvalidierung korrigiert (`romotionWidgetFee` -> `promotionWidgetFee`), wodurch das Feld für die Promotion-Widget-Fee bisher nicht validiert wurde (ENTW-3424)
+- Minimale PHPUnit-Testsuite für Statusmapping und API-Antwortvalidierung ergänzt (ENTW-3424); siehe README.md zur Ausführung
 # 2.0.3
 - Fehlerbehebung: Der automatische Statusabgleich verlor Bestellungen aus den Augen, sobald HeyLight sie in einen wartenden Status (in_progress) versetzte; wird nun bis zum Erreichen eines Endstatus weiter abgeglichen (ENTW-3424)
 - Fehlerbehebung: Ein unbekannter/nicht zugeordneter HeyLight-Status wurde als DECLINED behandelt und konnte gültige Bestellungen fälschlich stornieren; unbekannte Status werden nun geloggt und die Transaktion bleibt unverändert (ENTW-3424)

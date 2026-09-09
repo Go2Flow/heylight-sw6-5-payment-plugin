@@ -1,3 +1,6 @@
+# 2.0.4
+- Fix: corrected a typo in the administration settings validation (`romotionWidgetFee` -> `promotionWidgetFee`), which had left the promotion widget fee field unvalidated (ENTW-3424)
+- Added a minimal PHPUnit test suite for the status-mapping and API response validation logic (ENTW-3424); see README.md for how to run it
 # 2.0.3
 - Fix: scheduled order status sync stopped tracking orders once HeyLight moved them to a "waiting" state (in_progress); now keeps syncing until a final status is reached (ENTW-3424)
 - Fix: an unknown/unmapped HeyLight status was treated as DECLINED and could wrongly cancel a valid order; unknown statuses are now logged and left untouched instead (ENTW-3424)

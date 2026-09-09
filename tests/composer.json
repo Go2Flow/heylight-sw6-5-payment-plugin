@@ -1,0 +1,17 @@
+{
+    "name": "heylight/ecom-shopware-6-5-tests",
+    "description": "Standalone dev dependencies for the plugin's unit test suite. Deliberately kept separate from the plugin's own composer.json so running the tests never requires resolving/installing shopware/core or shopware/storefront.",
+    "type": "project",
+    "license": "proprietary",
+    "private": true,
+    "require-dev": {
+        "phpunit/phpunit": "^11.5",
+        "psr/log": "^3.0"
+    },
+    "config": {
+        "platform": {
+            "php": "8.3"
+        },
+        "sort-packages": true
+    }
+}

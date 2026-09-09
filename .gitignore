@@ -1,2 +1,6 @@
 /.idea
 /Archive
+/vendor
+/tests/vendor
+/.phpunit.cache
+/.phpunit.result.cache

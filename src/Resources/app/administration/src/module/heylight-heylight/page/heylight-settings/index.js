@@ -25,7 +25,7 @@ Component.register('heylight-settings', {
             validations: {
                 'secretKey': {required: true},
                 'promotionPublicApiKey': {required: true},
-                'romotionWidgetFee': {required: true},
+                'promotionWidgetFee': {required: true},
                 'promotionProductMode': {required: true},
                 'promotionTerms': {required: true},
                 'promotionTermsCredit': {required: true},

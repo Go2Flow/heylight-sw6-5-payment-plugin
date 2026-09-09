@@ -237,6 +237,26 @@ class HeyLightApiService
             'external_contract_uuids' => $external_contract_uuids
         ]);
 
+        return $this->parseOrderStatusResponse($response, $salesChannelId);
+    }
+
+    /**
+     * Validates and extracts the "statuses" payload from the raw HTTP
+     * response returned by HeyLightRequester for the getOrderStatus call.
+     *
+     * Extracted from getOrderStatus() so the response-validation logic can
+     * be unit-tested in isolation, without needing an HTTP client or a
+     * Shopware kernel boot. Behaviour/signature of getOrderStatus() itself
+     * is unchanged.
+     *
+     * @param array $response Raw response array as returned by
+     *        HeyLightRequester (expects 'code' and optionally 'contents').
+     * @param string $salesChannelId Used only for logging context.
+     * @return array The decoded "statuses" array, or [] if the response is
+     *         a non-200 HTTP response or has an invalid/unexpected body.
+     */
+    private function parseOrderStatusResponse(array $response, string $salesChannelId): array
+    {
         if ( $response['code'] !== 200 ) {
             $this->logger->error('HeyLight: getOrderStatus received a non-200 response', [
                 'salesChannelId' => $salesChannelId,
