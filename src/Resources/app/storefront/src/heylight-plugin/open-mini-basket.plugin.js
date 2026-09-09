@@ -11,7 +11,7 @@ export default class HeylightOpenMiniBasket extends Plugin {
         let cusid_ele = document.getElementsByClassName('heidipay-container-2');
         if (cusid_ele.length) {
             if (window.HeyLightLoaded) {
-                initCoreHeyLightCode(jQuery);
+                initCoreHeidiCode(jQuery);
             } else {
                 loadHeyLight();
             }

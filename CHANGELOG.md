@@ -1,3 +1,6 @@
+# 2.0.2
+- Fix: HeyLight widget on product detail page and cart did not render because currency/language were read from a non-existent template path (`page.header.*`), resulting in empty attributes (ENTW-3424)
+- Fix: HeyLight widget in the offcanvas mini-cart failed to initialize due to a call to a non-existent SDK function (`initCoreHeyLightCode`); corrected to the actual SDK entry point (`initCoreHeidiCode`) (ENTW-3424)
 # 2.0.1
 - Fix: payment amount sent to HeyLight no longer includes the promotion widget fee (ENTW-3424)
 - Fix: automatic order status sync task was a no-op (wrong array lookup, wrong response field name) and could leak a previous order's status onto a following order (ENTW-3424)
