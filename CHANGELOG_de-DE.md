@@ -1,3 +1,9 @@
+# 2.0.3
+- Fehlerbehebung: Der automatische Statusabgleich verlor Bestellungen aus den Augen, sobald HeyLight sie in einen wartenden Status (in_progress) versetzte; wird nun bis zum Erreichen eines Endstatus weiter abgeglichen (ENTW-3424)
+- Fehlerbehebung: Ein unbekannter/nicht zugeordneter HeyLight-Status wurde als DECLINED behandelt und konnte gültige Bestellungen fälschlich stornieren; unbekannte Status werden nun geloggt und die Transaktion bleibt unverändert (ENTW-3424)
+- Fehlerbehebung: getOrderStatus() stürzt nicht mehr bei einer ungültigen/unerwarteten API-Antwort ab; die Antwort wird vorher validiert und Fehler werden geloggt (ENTW-3424)
+- Fehlerbehebung: Eine fehlgeschlagene Lieferbestätigung an HeyLight wird nun geloggt statt stillschweigend ignoriert (ENTW-3424)
+- Fehlerbehebung: Die Auswahl der Zahlungsart (BNPL/Credit) verwendet nun die tatsächlich verarbeitete Transaktion statt der letzten Transaktion der Bestellung, wodurch bei mehreren Zahlungsversuchen nicht mehr die falsche Zahlungsart an HeyLight übermittelt wird (ENTW-3424)
 # 2.0.2
 - Fehlerbehebung: Das HeyLight-Widget auf der Produktdetailseite und im Warenkorb wurde nicht angezeigt, da Währung/Sprache über einen nicht existierenden Template-Pfad (`page.header.*`) ausgelesen wurden, was zu leeren Attributen führte (ENTW-3424)
 - Fehlerbehebung: Das HeyLight-Widget im Offcanvas-Mini-Warenkorb konnte nicht initialisiert werden, da eine nicht existierende SDK-Funktion (`initCoreHeyLightCode`) aufgerufen wurde; korrigiert auf den tatsächlichen SDK-Einstiegspunkt (`initCoreHeidiCode`) (ENTW-3424)
