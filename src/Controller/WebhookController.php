@@ -7,6 +7,7 @@ namespace Go2FlowHeyLightPayment\Controller;
 use Go2FlowHeyLightPayment\Handler\TransactionHandler;
 use Go2FlowHeyLightPayment\Helper\Transaction;
 use Go2FlowHeyLightPayment\Service\WebhookService;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,16 +27,19 @@ class WebhookController extends AbstractController
     private EntityRepository $orderRepository;
     private TransactionHandler $transactionHandler;
     private WebhookService $webhookService;
+    private LoggerInterface $logger;
 
     public function __construct(
         ContainerInterface $container,
         EntityRepository $orderRepository,
         TransactionHandler $transactionHandler,
         WebhookService $webhookService,
+        LoggerInterface $logger,
     ) {
         $this->orderRepository = $orderRepository;
         $this->transactionHandler = $transactionHandler;
         $this->webhookService = $webhookService;
+        $this->logger = $logger;
         $this->setContainer($container);
     }
 
@@ -84,8 +88,20 @@ class WebhookController extends AbstractController
             if ($transaction === null) {
                 throw PaymentException::invalidOrder($orderId);
             }
-            $status = Transaction::mapStatus($status);
-            $this->transactionHandler->handleTransactionStatus($transaction, $status, $context);
+            $mappedStatus = Transaction::mapStatus($status);
+            if ($mappedStatus === null) {
+                // Unknown/unmapped HeyLight status: don't touch the
+                // transaction. The scheduled sync task will pick the order
+                // up again (see OrderService) once HeyLight reports a
+                // known status, so we just acknowledge the webhook here.
+                $this->logger->warning('HeyLight: unknown webhook status received, skipping transaction update', [
+                    'orderId'        => $orderId,
+                    'transactionId'  => $transaction->getId(),
+                    'unmappedStatus' => $status,
+                ]);
+                return new JsonResponse(['success' => true]);
+            }
+            $this->transactionHandler->handleTransactionStatus($transaction, $mappedStatus, $context);
         } else {
             throw PaymentException::invalidOrder($orderId);
         }

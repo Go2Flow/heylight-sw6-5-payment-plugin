@@ -5,6 +5,7 @@ namespace Go2FlowHeyLightPayment\Subscriber;
 use Go2FlowHeyLightPayment\Handler\PaymentHandler;
 use Go2FlowHeyLightPayment\Installer\Modules\PaymentMethodInstaller;
 use Go2FlowHeyLightPayment\Service\HeyLightApiService;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -21,14 +22,17 @@ class OrderDeliverySubscriber implements EventSubscriberInterface
 
     private EntityRepository $orderDeliveryRepository;
     private HeyLightApiService $heyLightApiService;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepository  $orderDeliveryRepository,
-        HeyLightApiService $heyLightApiService
+        HeyLightApiService $heyLightApiService,
+        LoggerInterface $logger
     )
     {
         $this->orderDeliveryRepository = $orderDeliveryRepository;
         $this->heyLightApiService = $heyLightApiService;
+        $this->logger = $logger;
     }
 
     /**
@@ -56,7 +60,21 @@ class OrderDeliverySubscriber implements EventSubscriberInterface
         if ($order) {
             $externalId = $this->getExternalIdFromOrder($order);
             if ($externalId) {
-                $this->heyLightApiService->confirmDelivery($externalId, $order->getSalesChannelId());
+                $confirmed = $this->heyLightApiService->confirmDelivery($externalId, $order->getSalesChannelId());
+                if (!$confirmed) {
+                    // NOTE: no automatic retry is implemented here. Building a
+                    // reliable retry (state tracking + a new scheduled task)
+                    // is a bigger feature on its own and out of scope for
+                    // this fix; recommended as a separate follow-up ticket.
+                    // For now we at least make the failure visible so it can
+                    // be confirmed manually with HeyLight/support.
+                    $this->logger->error('HeyLight: confirmDelivery API call failed', [
+                        'orderId'       => $order->getId(),
+                        'orderNumber'   => $order->getOrderNumber(),
+                        'externalId'    => $externalId,
+                        'salesChannelId'=> $order->getSalesChannelId(),
+                    ]);
+                }
             }
         }
     }

@@ -32,12 +32,20 @@ class Transaction {
         HeyLightApiService::STATUS_CANCELLED => Transaction::CANCELLED,
     ];
 
-    public static function mapStatus(string $status): string
+    /**
+     * Maps a HeyLight status string to an internal transaction status.
+     *
+     * Returns null for any status not present in STATUS_MAP instead of
+     * defaulting to DECLINED. An unmapped status must never be treated as a
+     * hard decline, since that would erroneously cancel the Shopware
+     * transaction for a status HeyLight added/renamed that we don't know
+     * about yet. Callers MUST check for null and, if it occurs, log it and
+     * leave the transaction untouched so it is retried on the next
+     * scheduled sync run instead of being wrongly cancelled.
+     */
+    public static function mapStatus(string $status): ?string
     {
-        if (array_key_exists(strtolower($status), self::STATUS_MAP)) {
-            return self::STATUS_MAP[strtolower($status)];
-        }
-        return self::DECLINED;
+        return self::STATUS_MAP[strtolower($status)] ?? null;
     }
 
 }

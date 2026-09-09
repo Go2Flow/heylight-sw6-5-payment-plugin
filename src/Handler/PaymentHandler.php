@@ -105,6 +105,7 @@ class PaymentHandler extends AbstractPaymentHandler
         try {
             $gateway = $this->heyLightApiService->processPayment(
                 $order,
+                $orderTransaction,
                 (string) $transaction->getReturnUrl(),
                 $context
             );

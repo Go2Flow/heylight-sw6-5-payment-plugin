@@ -8,6 +8,7 @@ use Go2FlowHeyLightPayment\Helper\HeyLightRequester;
 use Go2FlowHeyLightPayment\Helper\OrderHelper;
 use Go2FlowHeyLightPayment\Installer\Modules\PaymentMethodInstaller;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -142,12 +143,12 @@ class HeyLightApiService
         return PaymentHandler::BASE_URL.'/';
     }
 
-    public function processPayment(OrderEntity $order, string $url, Context $context): ?array
+    public function processPayment(OrderEntity $order, OrderTransactionEntity $orderTransaction, string $url, Context $context): ?array
     {
         try {
             $salesChannelId = $order->getSalesChannelId();
             $token = $this->getAuthTransactionToken($salesChannelId);
-            $productType = $this->getPaymentType($order);
+            $productType = $this->getPaymentType($orderTransaction);
             if ($productType === 'CREDIT') {
                 $terms = $this->getConfigValueByChannelId( 'promotionTermsCredit' , $salesChannelId );
             } else {
@@ -237,10 +238,36 @@ class HeyLightApiService
         ]);
 
         if ( $response['code'] !== 200 ) {
+            $this->logger->error('HeyLight: getOrderStatus received a non-200 response', [
+                'salesChannelId' => $salesChannelId,
+                'httpCode'       => $response['code'] ?? null,
+                'responseBody'   => $response['contents'] ?? null,
+            ]);
             return [];
         }
 
-        return json_decode( $response['contents'], true )['statuses'];
+        $responseData = json_decode( $response['contents'] ?? '', true );
+
+        if (
+            !\is_array( $responseData )
+            || !isset( $responseData['statuses'] )
+            || !\is_array( $responseData['statuses'] )
+        ) {
+            // Invalid/unexpected response shape: log everything we have and
+            // return an empty array. Callers (OrderService::workOrders)
+            // already treat an empty array as "nothing to update" and leave
+            // all transactions untouched, so this is safe: no order gets
+            // wrongly modified, and the scheduled task simply retries on
+            // its next run.
+            $this->logger->error('HeyLight: getOrderStatus received an invalid/unexpected response body', [
+                'salesChannelId' => $salesChannelId,
+                'httpCode'       => $response['code'] ?? null,
+                'responseBody'   => $response['contents'] ?? null,
+            ]);
+            return [];
+        }
+
+        return $responseData['statuses'];
     }
 
     /**
@@ -299,10 +326,17 @@ class HeyLightApiService
         return true;
     }
 
-    private function getPaymentType(OrderEntity $order): string
+    /**
+     * @param OrderTransactionEntity $orderTransaction The concrete transaction being
+     *        processed by the payment handler (NOT re-derived from
+     *        $order->getTransactions()->last(), which is unsorted and can
+     *        pick an unrelated/older transaction on orders with multiple
+     *        payment attempts).
+     */
+    private function getPaymentType(OrderTransactionEntity $orderTransaction): string
     {
         $technicalName = null;
-        $paymentMethod = $order->getTransactions()->last()->getPaymentMethod();
+        $paymentMethod = $orderTransaction->getPaymentMethod();
         if (method_exists($paymentMethod, 'getTechnicalName')) {
             $technicalName = $paymentMethod->getTechnicalName();
         } else {
